@@ -1,0 +1,72 @@
+:root {
+  /* Premium Cinematic Color Palette */
+  --bg-primary: #0A0A0F; /* Deep Midnight Black */
+  --bg-secondary: #15161C; /* Charcoal */
+  --bg-tertiary: #1C1D24; /* Dark Slate */
+  
+  --bg-card: rgba(28, 29, 36, 0.6); /* Semi-transparent slate */
+  --bg-glass: rgba(21, 22, 28, 0.4); /* Glassmorphism base */
+  
+  --accent-primary: #C1121F; /* Crimson Red */
+  --accent-primary-hover: #E51A27;
+  --accent-primary-dim: rgba(193, 18, 31, 0.15);
+  
+  --accent-secondary: #3B82F6; /* Electric Blue */
+  --accent-secondary-dim: rgba(59, 130, 246, 0.15);
+  
+  --accent-gold: #D4AF37; /* Highlight Accent - Soft Gold */
+  --accent-gold-hover: #F3C93F;
+  --accent-gold-dim: rgba(212, 175, 55, 0.15);
+  
+  --text-primary: #FFFFFF; /* Pure White */
+  --text-secondary: #B5B5B5; /* Soft Gray */
+  --text-muted: #7A7A7A;
+
+  --border-color: rgba(255, 255, 255, 0.06);
+  --border-highlight: rgba(193, 18, 31, 0.3); /* Crimson border highlight */
+
+  /* Status Colors */
+  --status-want: var(--accent-secondary);
+  --status-watching: var(--accent-gold);
+  --status-watched: #10B981; /* Emerald */
+  --status-rewatched: #8B5CF6; /* Purple */
+
+  /* Typography - Preserved */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-display: 'Outfit', 'Inter', sans-serif;
+  
+  /* Layout & Spacing */
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 80px;
+  --topbar-height: 70px;
+  
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  
+  /* Borders & Radii */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+  
+  /* Premium Shadows & Glows */
+  --shadow-soft: 0 10px 40px -10px rgba(0, 0, 0, 0.7);
+  --shadow-lift: 0 20px 40px -10px rgba(0, 0, 0, 0.8);
+  --shadow-glow: 0 0 24px rgba(193, 18, 31, 0.3);
+  --shadow-glow-blue: 0 0 24px rgba(59, 130, 246, 0.2);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+
+  /* Glassmorphism Blurs */
+  --blur-sm: blur(8px);
+  --blur-md: blur(16px);
+  --blur-lg: blur(24px);
+
+  /* Cinematic Transitions */
+  --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}

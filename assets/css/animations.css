@@ -1,0 +1,70 @@
+/* Premium Keyframe Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(193, 18, 31, 0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(193, 18, 31, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(193, 18, 31, 0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+/* Utility classes for animations */
+.animate-fade-in {
+  animation: fadeIn var(--transition-slow) forwards;
+}
+
+.animate-slide-up {
+  animation: fadeUp var(--transition-normal) forwards;
+}
+
+.animate-scale-up {
+  animation: scaleUp var(--transition-normal) forwards;
+}
+
+/* Delay utilities */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* Elegant Loading Skeletons */
+.skeleton {
+  background: var(--bg-tertiary);
+  background-image: linear-gradient(
+    90deg, 
+    var(--bg-tertiary) 0px, 
+    rgba(36, 38, 48, 1) 40px, 
+    var(--bg-tertiary) 80px
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2.5s infinite ease-in-out forwards;
+  border-radius: var(--radius-md);
+}
