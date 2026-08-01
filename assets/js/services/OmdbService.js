@@ -1,6 +1,6 @@
 class OmdbService {
     constructor() {
-        this.BASE_URL = 'http://www.omdbapi.com/';
+        this.BASE_URL = 'https://www.omdbapi.com/';
         this.API_KEY = '9145d008';
     }
 
