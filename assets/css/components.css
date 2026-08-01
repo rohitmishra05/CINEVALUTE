@@ -255,7 +255,7 @@
 @media (max-width: 768px) {
   .movie-grid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    gap: var(--spacing-md);
   }
   
   .movie-card-overlay {
@@ -284,41 +284,49 @@
 
 @media (max-width: 480px) {
   .movie-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
   }
   
   .movie-card-overlay {
-    padding: 18px 5px 5px 5px;
+    padding: 20px 8px 8px 8px;
   }
 
   .movie-title-sm {
-    font-size: 0.72rem;
+    font-size: 0.85rem;
   }
 
   .movie-info-sm {
-    font-size: 0.62rem;
+    font-size: 0.75rem;
   }
 }
 
 @media (max-width: 390px) {
   .movie-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
   }
 
   .movie-title-sm {
-    font-size: 0.68rem;
+    font-size: 0.8rem;
+  }
+
+  .movie-info-sm {
+    font-size: 0.7rem;
   }
 }
 
 @media (max-width: 320px) {
   .movie-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 
   .movie-title-sm {
+    font-size: 0.75rem;
+  }
+  
+  .movie-info-sm {
     font-size: 0.65rem;
   }
 }
