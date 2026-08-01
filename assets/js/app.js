@@ -3,7 +3,7 @@ import { storage } from './services/StorageService.js';
 class App {
     constructor() {
         this.currentRoute = '';
-        this.routes = ['home', 'search', 'movies', 'collections', 'stats', 'picker', 'settings', 'movie-detail'];
+        this.routes = ['home', 'search', 'movies', 'collections', 'stats', 'picker', 'settings', 'movie-detail', 'series', 'series-search', 'series-detail'];
         
         // Controller instances cache
         this.controllers = {};
@@ -71,7 +71,10 @@ class App {
             'stats': 'Statistics',
             'picker': 'Random Picker',
             'settings': 'Settings',
-            'movie-detail': 'Movie Details'
+            'movie-detail': 'Movie Details',
+            'series': 'My Web Series',
+            'series-search': 'Discover Series',
+            'series-detail': 'Series Details'
         };
         const titleEl = document.getElementById('current-page-title');
         if (titleEl) {
@@ -80,7 +83,9 @@ class App {
     }
 
     updateActiveNav(route) {
-        const baseRoute = route === 'movie-detail' ? 'movies' : route;
+        let baseRoute = route;
+        if (route === 'movie-detail') baseRoute = 'movies';
+        if (route === 'series-detail') baseRoute = 'series';
         
         const navLinks = document.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
@@ -125,6 +130,18 @@ class App {
             else if (route === 'settings') {
                 const { SettingsController } = await import('./pages/settings.js');
                 this.controllers.settings = new SettingsController(`view-${route}`);
+            }
+            else if (route === 'series') {
+                const { SeriesController } = await import('./pages/series.js');
+                this.controllers.series = new SeriesController(`view-${route}`);
+            }
+            else if (route === 'series-search') {
+                const { SeriesSearchController } = await import('./pages/series-search.js');
+                this.controllers.seriesSearch = new SeriesSearchController(`view-${route}`);
+            }
+            else if (route === 'series-detail') {
+                const { SeriesDetailController } = await import('./pages/series-detail.js');
+                this.controllers.seriesDetail = new SeriesDetailController(`view-${route}`, params);
             }
             // Add other routes here as we build them...
             else {

@@ -27,6 +27,24 @@ class OmdbService {
         }
     }
 
+    async searchSeries(query) {
+        try {
+            const response = await fetch(`${this.BASE_URL}?apikey=${this.API_KEY}&s=${encodeURIComponent(query)}&type=series`);
+            if (!response.ok) throw new Error('Network response was not ok');
+            const data = await response.json();
+            
+            // Map to a consistent format
+            if (data.Response === "True" && data.Search) {
+                return { results: data.Search };
+            } else {
+                return { results: [] };
+            }
+        } catch (error) {
+            console.error('OMDb Search Error:', error);
+            return { results: [] };
+        }
+    }
+
     async getMovieDetails(id) {
         try {
             const response = await fetch(`${this.BASE_URL}?apikey=${this.API_KEY}&i=${id}&plot=full`);

@@ -10,8 +10,9 @@ export class HomeController {
     render() {
         const data = storage.getData();
         const movies = data.movies || [];
+        const series = data.series || [];
         
-        // Calculate basic stats
+        // Calculate basic stats for movies (keeping original logic for stats)
         const totalMovies = movies.length;
         const watched = movies.filter(m => m.status === 'watched' || m.status === 'rewatched').length;
         const watchLater = movies.filter(m => m.status === 'want').length;
@@ -22,7 +23,19 @@ export class HomeController {
             avgRating = (ratedMovies.reduce((acc, m) => acc + m.personalRating, 0) / ratedMovies.length).toFixed(1);
         }
 
-        const recentMovies = movies.slice(0, 5); // top 5 recently added
+        // Aggregate Star Section Items
+        const allItems = [
+            ...movies.map(m => ({...m, _type: 'movie'})),
+            ...series.map(s => ({...s, _type: 'series'}))
+        ];
+
+        // Star Section items (rating 8 or higher)
+        const starItems = allItems
+            .filter(item => (item.personalRating || 0) >= 8)
+            .sort((a, b) => (b.personalRating || 0) - (a.personalRating || 0))
+            .slice(0, 10); // Show top 10 favorites
+
+        const recentMovies = movies.slice(0, 5); // top 5 recently added movies
 
         this.container.innerHTML = `
             <div class="dashboard-header" style="margin-bottom: var(--spacing-2xl);">
@@ -74,10 +87,22 @@ export class HomeController {
                 </div>
             </div>
 
+            <!-- Star Section (Favorites) -->
+            ${starItems.length > 0 ? `
+            <div class="section-star animate-slide-up delay-200" style="margin-bottom: var(--spacing-2xl);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                    <h2 style="display: flex; align-items: center; gap: 0.5rem;"><i class="ph ph-star-fill text-gold"></i> Starred Favorites</h2>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--spacing-lg);">
+                    ${this.generateCards(starItems)}
+                </div>
+            </div>
+            ` : ''}
+
             <!-- Recently Added -->
             <div class="section-recent animate-slide-up delay-300">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
-                    <h2>Recently Added</h2>
+                    <h2>Recently Added Movies</h2>
                     <a href="#movies" class="text-gold" style="font-size: 0.9rem; font-weight: 500;">View All <i class="ph ph-arrow-right"></i></a>
                 </div>
                 
@@ -89,7 +114,7 @@ export class HomeController {
                     </div>
                 ` : `
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--spacing-lg);">
-                        ${this.generateMovieCards(recentMovies)}
+                        ${this.generateCards(recentMovies.map(m => ({...m, _type: 'movie'})), false)}
                     </div>
                 `}
             </div>
@@ -98,15 +123,26 @@ export class HomeController {
         this.attachEventListeners();
     }
 
-    generateMovieCards(movies) {
-        return movies.map((movie, index) => {
-            const posterUrl = omdb.getImageUrl(movie.poster_path);
+    generateCards(items, showBadge = true) {
+        return items.map((item, index) => {
+            const posterUrl = omdb.getImageUrl(item.poster_path);
             const delay = (index % 5) * 100;
+            
+            const isMovie = item._type === 'movie';
+            const badgeLabel = isMovie ? '🎬 Movie' : '📺 Web Series';
+            const badgeHtml = showBadge 
+                ? `<span style="position: absolute; top: 0.5rem; left: 0.5rem; background: rgba(0,0,0,0.8); color: white; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px);">${badgeLabel}</span>`
+                : '';
+
+            const route = isMovie ? `#movie-detail/${item.id}` : `#series-detail/${item.id}`;
+
             return `
-                <div class="movie-card animate-scale-up" style="animation-delay: ${delay}ms" data-id="${movie.id}">
-                    <img src="${posterUrl}" alt="${movie.title}" loading="lazy">
+                <div class="movie-card animate-scale-up" style="animation-delay: ${delay}ms" data-route="${route}">
+                    ${badgeHtml}
+                    <img src="${posterUrl}" alt="${item.title}" loading="lazy">
                     <div class="movie-card-overlay">
-                        <h3 class="movie-title-sm">${movie.title}</h3>
+                        <h3 class="movie-title-sm">${item.title}</h3>
+                        ${item.personalRating ? `<div style="color: var(--accent-gold); font-size: 0.8rem; font-weight: bold; margin-top: 0.25rem;">⭐ ${item.personalRating}/10</div>` : ''}
                     </div>
                 </div>
             `;
@@ -118,8 +154,9 @@ export class HomeController {
         const cards = this.container.querySelectorAll('.movie-card');
         cards.forEach(card => {
             card.addEventListener('click', () => {
-                const id = card.dataset.id;
-                window.location.hash = `#movie-detail/${id}`;
+                if (card.dataset.route) {
+                    window.location.hash = card.dataset.route;
+                }
             });
         });
     }

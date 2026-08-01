@@ -68,6 +68,7 @@ export class SettingsController {
                 try {
                     const data = JSON.parse(event.target.result);
                     if (data && data.movies && data.collections) {
+                        if (!data.series) data.series = []; // Backward compatibility
                         localStorage.setItem('cinevault_data', JSON.stringify(data));
                         alert('Data imported successfully! The page will now reload.');
                         window.location.reload();

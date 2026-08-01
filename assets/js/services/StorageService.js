@@ -12,6 +12,7 @@ class StorageService {
         if (!localStorage.getItem(this.STORAGE_KEY)) {
             const defaultData = {
                 movies: [],
+                series: [],
                 collections: [
                     { id: 'fav', name: 'Favorites', description: 'My all-time favorite movies.' },
                     { id: 'watchlist', name: 'Watchlist', description: 'Movies I want to watch.' }
@@ -27,7 +28,11 @@ class StorageService {
     getData() {
         try {
             const data = localStorage.getItem(this.STORAGE_KEY);
-            return JSON.parse(data);
+            const parsed = JSON.parse(data);
+            if (parsed && !parsed.series) {
+                parsed.series = []; // Ensure backward compatibility
+            }
+            return parsed;
         } catch (e) {
             console.error("Error reading from local storage", e);
             return null;
@@ -85,6 +90,50 @@ class StorageService {
     deleteMovie(id) {
         const data = this.getData();
         data.movies = data.movies.filter(m => m.id !== id);
+        this.saveData(data);
+    }
+
+    // --- Web Series ---
+    getSeries() {
+        return this.getData().series || [];
+    }
+
+    addSeries(seriesData) {
+        const data = this.getData();
+        const exists = data.series.find(s => s.id === seriesData.id);
+        if (exists) return false;
+
+        seriesData.addedAt = new Date().toISOString();
+        seriesData.status = 'want'; // Default status
+        seriesData.personalRating = 0;
+        seriesData.notes = {
+            review: '',
+            storytelling: '',
+            cinematography: '',
+            acting: '',
+            editing: ''
+        };
+        seriesData.collections = ['watchlist'];
+
+        data.series.unshift(seriesData);
+        this.saveData(data);
+        return true;
+    }
+
+    updateSeries(id, updates) {
+        const data = this.getData();
+        const index = data.series.findIndex(s => s.id === id);
+        if (index !== -1) {
+            data.series[index] = { ...data.series[index], ...updates };
+            this.saveData(data);
+            return true;
+        }
+        return false;
+    }
+
+    deleteSeries(id) {
+        const data = this.getData();
+        data.series = data.series.filter(s => s.id !== id);
         this.saveData(data);
     }
 
