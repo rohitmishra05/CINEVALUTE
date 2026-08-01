@@ -23,7 +23,7 @@ export class SearchController {
                 </div>
             </div>
 
-            <div class="movie-grid" id="search-results">
+            <div id="search-results" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--spacing-xl);">
                 <!-- Results go here -->
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-secondary); padding: var(--spacing-2xl);">
                     <i class="ph ph-film-strip" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem; display: block;"></i>

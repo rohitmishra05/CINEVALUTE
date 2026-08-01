@@ -31,7 +31,7 @@ export class HomeController {
             </div>
 
             <!-- Stats Grid -->
-            <div class="stats-grid animate-slide-up delay-200">
+            <div class="stats-grid animate-slide-up delay-200" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); margin-bottom: var(--spacing-2xl);">
                 
                 <div class="glass-panel" style="padding: var(--spacing-lg); display: flex; align-items: center; gap: var(--spacing-md);">
                     <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; color: var(--accent-gold);">

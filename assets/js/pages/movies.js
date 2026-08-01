@@ -36,7 +36,7 @@ export class MoviesController {
                 </div>
             </div>
 
-            <div class="movie-grid" id="movies-grid">
+            <div id="movies-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--spacing-xl);">
                 <!-- Movies will be rendered here -->
             </div>
         `;

@@ -1,9 +1,7 @@
-import { CONFIG } from './config.js';
-
 class OmdbService {
     constructor() {
         this.BASE_URL = 'http://www.omdbapi.com/';
-        this.API_KEY = CONFIG.OMDB_API_KEY;
+        this.API_KEY = '9145d008';
     }
 
     getImageUrl(path) {

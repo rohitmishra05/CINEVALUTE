@@ -59,7 +59,7 @@ export class MovieDetailController {
             </div>
 
             <!-- Content Layout -->
-            <div class="movie-detail-layout">
+            <div style="display: grid; grid-template-columns: 300px 1fr; gap: var(--spacing-2xl); position: relative; margin-top: -150px; z-index: 10;">
                 
                 <!-- Left Column (Poster & Actions) -->
                 <div class="sidebar-column animate-slide-up">
@@ -100,7 +100,7 @@ export class MovieDetailController {
                         ${this.movie.overview}
                     </p>
 
-                    <div class="movie-stats-grid">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg); margin-bottom: var(--spacing-2xl);">
                         <div class="glass-panel" style="padding: var(--spacing-lg);">
                             <h3 style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">Director</h3>
                             <p style="font-weight: 500; font-size: 1.1rem;">${this.movie.director || 'Unknown'}</p>
