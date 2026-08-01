@@ -254,22 +254,35 @@
 
 @media (max-width: 768px) {
   .movie-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: var(--spacing-md);
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: var(--spacing-sm);
+  }
+  
+  .movie-card-overlay {
+    padding: var(--spacing-sm) var(--spacing-xs) var(--spacing-xs);
+  }
+  
+  .movie-title-sm {
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+  }
+  
+  .movie-info-sm {
+    font-size: 0.7rem;
   }
 }
 
 @media (max-width: 480px) {
   .movie-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: var(--spacing-sm);
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: var(--spacing-xs);
   }
 }
 
 @media (max-width: 360px) {
   .movie-grid {
-    grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
-    gap: var(--spacing-xs);
+    grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+    gap: 4px;
   }
 }
 
