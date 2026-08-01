@@ -12,6 +12,11 @@ body {
   min-height: 100vh;
 }
 
+h1 { font-size: clamp(2rem, 5vw, 3rem); }
+h2 { font-size: clamp(1.5rem, 4vw, 2.25rem); }
+h3 { font-size: clamp(1.25rem, 3vw, 1.75rem); }
+h4 { font-size: clamp(1.1rem, 2.5vw, 1.5rem); }
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 600;
@@ -62,6 +67,24 @@ h1, h2, h3, h4, h5, h6 {
   z-index: 100;
   transition: width var(--transition-normal);
   box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2rem;
+}
+
+.main-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.settings-nav {
+  margin-top: auto;
 }
 
 .main-content {
@@ -158,20 +181,32 @@ h1, h2, h3, h4, h5, h6 {
   }
   .sidebar {
     width: 100%;
-    height: auto;
+    height: 70px;
     position: fixed;
     bottom: 0;
     top: auto;
-    flex-direction: row;
-    justify-content: space-around;
     padding: var(--spacing-sm);
     border-right: none;
     border-top: 1px solid var(--border-color);
     z-index: 100;
   }
+  .logo-container {
+    display: none;
+  }
+  .main-nav {
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+  }
+  .settings-nav {
+    margin-top: 0;
+  }
+  .hide-on-mobile {
+    display: none !important;
+  }
   .main-content {
     margin-left: 0;
-    margin-bottom: 70px;
+    margin-bottom: 70px; /* Space for bottom nav */
   }
   .topbar {
     padding: 0 var(--spacing-md);
@@ -179,6 +214,47 @@ h1, h2, h3, h4, h5, h6 {
   .view-container {
     padding: var(--spacing-md);
   }
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    flex-direction: column;
+    height: auto;
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
+    align-items: stretch;
+  }
+  
+  .topbar .page-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    order: 1;
+  }
+  
+  .topbar-actions {
+    order: 2;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .topbar-actions .input-group {
+    width: 100% !important;
+    order: 3;
+    margin-top: var(--spacing-xs);
+  }
+  
+  .topbar-actions .btn-icon,
+  .topbar-actions .user-profile {
+    /* Move these visually to the top row next to the title via position absolute or flex order magic.
+       Actually, moving them into the title container via JS is better, but pure CSS: */
+    position: absolute;
+    top: var(--spacing-md);
+  }
+  
+  .topbar-actions .btn-icon { right: calc(var(--spacing-md) + 50px); }
+  .topbar-actions .user-profile { right: var(--spacing-md); }
 }
 
 /* Mobile Specific Layouts */
@@ -217,21 +293,24 @@ h1, h2, h3, h4, h5, h6 {
   }
   
   .hero-banner {
-    height: 30vh !important;
-    min-height: 200px !important;
+    height: 35vh !important;
+    min-height: 250px !important;
   }
   
   .sidebar-column {
-    max-width: 300px;
+    max-width: 100%;
+    width: 100%;
     margin: 0 auto;
   }
   
-  .topbar-actions .input-group {
-    width: 180px !important;
+  .sidebar-column img {
+    max-width: 250px;
+    margin: 0 auto;
+    display: block;
   }
   
-  h1 {
-    font-size: 2rem !important;
+  .topbar-actions .input-group {
+    width: auto !important;
   }
 }
 

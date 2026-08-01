@@ -24,12 +24,12 @@
     <div id="app-container">
         <!-- Sidebar Navigation -->
         <aside class="sidebar glass-panel">
-            <div class="logo-container" style="display: flex; align-items: center; gap: 10px; margin-bottom: 2rem;">
+            <div class="logo-container">
                 <i class="ph ph-film-strip" style="font-size: 2rem; color: var(--accent-primary);"></i>
                 <h2 class="logo-text" style="margin: 0; font-size: 1.5rem;">Cine<span class="text-primary">Vault</span></h2>
             </div>
             
-            <nav class="main-nav" style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1;">
+            <nav class="main-nav">
                 <a href="#home" class="nav-link" data-route="home">
                     <i class="ph ph-squares-four"></i>
                     <span class="nav-text">Dashboard</span>
@@ -46,22 +46,19 @@
                     <i class="ph ph-folders"></i>
                     <span class="nav-text">Collections</span>
                 </a>
-                <a href="#stats" class="nav-link" data-route="stats">
+                <a href="#stats" class="nav-link hide-on-mobile" data-route="stats">
                     <i class="ph ph-chart-line-up"></i>
                     <span class="nav-text">Statistics</span>
                 </a>
-                <a href="#picker" class="nav-link" data-route="picker">
+                <a href="#picker" class="nav-link hide-on-mobile" data-route="picker">
                     <i class="ph ph-dice-five"></i>
                     <span class="nav-text">Random Picker</span>
                 </a>
-            </nav>
-
-            <div class="settings-nav" style="margin-top: auto;">
-                <a href="#settings" class="nav-link" data-route="settings">
+                <a href="#settings" class="nav-link settings-nav" data-route="settings">
                     <i class="ph ph-gear"></i>
                     <span class="nav-text">Settings</span>
                 </a>
-            </div>
+            </nav>
         </aside>
 
         <!-- Main Content Area -->

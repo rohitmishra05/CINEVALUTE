@@ -13,6 +13,7 @@
   letter-spacing: 0.02em;
   position: relative;
   overflow: hidden;
+  min-height: 44px; /* HIG Touch Target Standard */
 }
 
 .btn-primary {
@@ -102,6 +103,7 @@
   transition: all var(--transition-normal);
   font-family: var(--font-sans);
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  min-height: 44px; /* Touch Target Standard */
 }
 
 .input-field::placeholder {
@@ -240,13 +242,34 @@
 .movie-grid {
   display: grid; 
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
-  gap: var(--spacing-lg);
+  gap: var(--spacing-xl);
+}
+
+@media (max-width: 1024px) {
+  .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--spacing-lg);
+  }
 }
 
 @media (max-width: 768px) {
   .movie-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 360px) {
+  .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+    gap: var(--spacing-xs);
   }
 }
 
