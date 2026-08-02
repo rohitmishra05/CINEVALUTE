@@ -32,6 +32,12 @@ export class MovieDetailController {
     }
 
     render() {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) mainContent.scrollTop = 0;
+
         // Fallback to poster for backdrop since OMDb lacks high-res landscape backdrops
         const backdropUrl = omdb.getImageUrl(this.movie.poster_path);
         const posterUrl = omdb.getImageUrl(this.movie.poster_path);

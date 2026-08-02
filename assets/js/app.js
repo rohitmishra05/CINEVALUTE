@@ -50,6 +50,13 @@ class App {
     }
 
     async updateView(route, params) {
+        // Reset scroll position to top on every navigation
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) mainContent.scrollTop = 0;
+
         document.querySelectorAll('.view-container').forEach(view => {
             view.classList.remove('active');
         });
@@ -60,6 +67,12 @@ class App {
         }
 
         await this.loadPageController(route, params);
+
+        // Re-enforce scroll reset after controller renders
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        if (mainContent) mainContent.scrollTop = 0;
     }
 
     updatePageTitle(route) {

@@ -32,6 +32,12 @@ export class SeriesDetailController {
     }
 
     render() {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) mainContent.scrollTop = 0;
+
         const backdropUrl = omdb.getImageUrl(this.series.poster_path);
         const posterUrl = omdb.getImageUrl(this.series.poster_path);
         const year = this.series.release_date ? this.series.release_date.split('-')[0] : '';
