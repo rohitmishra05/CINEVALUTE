@@ -46,13 +46,11 @@ export class SeriesController {
     }
 
     getFilteredAndSortedSeries() {
-        // Filter
         let result = this.series;
         if (this.filter !== 'all') {
             result = result.filter(s => s.status === this.filter);
         }
 
-        // Sort
         result.sort((a, b) => {
             switch (this.sort) {
                 case 'added_desc':
@@ -114,7 +112,6 @@ export class SeriesController {
             `;
         }).join('');
 
-        // Attach click events
         grid.querySelectorAll('.movie-card').forEach(card => {
             card.addEventListener('click', () => {
                 window.location.hash = `#series-detail/${card.dataset.id}`;

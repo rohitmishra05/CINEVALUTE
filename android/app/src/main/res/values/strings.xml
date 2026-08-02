@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CineVaulte</string>
+    <string name="title_activity_main">CineVaulte</string>
+    <string name="package_name">com.ro.cinevaulte</string>
+    <string name="custom_url_scheme">com.ro.cinevaulte</string>
+</resources>

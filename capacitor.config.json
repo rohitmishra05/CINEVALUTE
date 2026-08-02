@@ -1,0 +1,9 @@
+{
+  "appId": "com.ro.cinevaulte",
+  "appName": "CineVault",
+  "webDir": "www",
+  "server": {
+    "url": "https://cinevalute.vercel.app",
+    "cleartext": true
+  }
+}

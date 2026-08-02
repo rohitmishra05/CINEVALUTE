@@ -1,5 +1,6 @@
 import { storage } from '../services/StorageService.js';
 import { omdb } from '../services/OmdbService.js';
+import { CollectionModal } from '../components/CollectionModal.js';
 
 export class SeriesDetailController {
     constructor(containerId, params) {
@@ -77,7 +78,23 @@ export class SeriesDetailController {
                         <div style="display: flex; gap: 0.25rem; align-items: center; margin-bottom: var(--spacing-md);" id="rating-stars">
                             ${this.generateStars(this.series.personalRating || 0)}
                         </div>
-                        <span id="rating-value" class="text-gold" style="font-weight: bold;">${this.series.personalRating || 0} / 10</span>
+                        <span id="rating-value" class="text-gold" style="font-weight: bold; display: block; margin-bottom: var(--spacing-md);">${this.series.personalRating || 0} / 10</span>
+
+                        <h3 style="margin-bottom: var(--spacing-sm); margin-top: var(--spacing-md); display: flex; align-items: center; gap: 0.5rem;"><i class="ph ph-folders text-gold"></i> Add to Collection</h3>
+                        <div class="collections-checklist" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 140px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-bottom: 0.5rem;">
+                            ${(storage.getCollections() || []).map(c => {
+                                const inCol = (this.series.collections || []).includes(c.id);
+                                return `
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer; color: var(--text-secondary);">
+                                        <input type="checkbox" class="col-checkbox" data-col-id="${c.id}" ${inCol ? 'checked' : ''}>
+                                        <span>${c.name}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                        <button id="btn-open-col-modal" class="btn btn-secondary" style="width: 100%; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.35rem;">
+                            <i class="ph ph-sliders text-gold"></i> Select Collections
+                        </button>
                     </div>
 
                     <button class="btn btn-secondary" style="width: 100%; color: #fa5252; border-color: rgba(250, 82, 82, 0.3);" id="btn-delete">
@@ -159,6 +176,35 @@ export class SeriesDetailController {
         statusSelect.addEventListener('change', (e) => {
             storage.updateSeries(this.series.id, { status: e.target.value });
         });
+
+        // Collection Checkboxes
+        const colCheckboxes = this.container.querySelectorAll('.col-checkbox');
+        colCheckboxes.forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const colId = e.target.dataset.colId;
+                storage.toggleSeriesCollection(this.series.id, colId);
+                if (!this.series.collections) this.series.collections = [];
+                const idx = this.series.collections.indexOf(colId);
+                if (idx > -1) this.series.collections.splice(idx, 1);
+                else this.series.collections.push(colId);
+            });
+        });
+
+        // Collection Modal Button
+        const btnOpenColModal = this.container.querySelector('#btn-open-col-modal');
+        if (btnOpenColModal) {
+            btnOpenColModal.addEventListener('click', () => {
+                CollectionModal.open({
+                    title: `Select Collections`,
+                    initialSelectedIds: this.series.collections || [],
+                    onSave: (selectedIds) => {
+                        storage.addSeries(this.series, selectedIds);
+                        this.series.collections = selectedIds;
+                        this.render();
+                    }
+                });
+            });
+        }
 
         // Rating Stars
         const stars = this.container.querySelectorAll('.star-rating');

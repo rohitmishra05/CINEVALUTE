@@ -1,5 +1,6 @@
 import { storage } from '../services/StorageService.js';
 import { omdb } from '../services/OmdbService.js';
+import { CollectionModal } from '../components/CollectionModal.js';
 
 export class MovieDetailController {
     constructor(containerId, params) {
@@ -59,15 +60,15 @@ export class MovieDetailController {
             </div>
 
             <!-- Content Layout -->
-            <div style="display: grid; grid-template-columns: 300px 1fr; gap: var(--spacing-2xl); position: relative; margin-top: -150px; z-index: 10;">
+            <div class="movie-detail-layout" style="display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: var(--spacing-2xl); position: relative; margin-top: -150px; z-index: 10; max-width: 100%; box-sizing: border-box;">
                 
                 <!-- Left Column (Poster & Actions) -->
-                <div class="sidebar-column animate-slide-up">
-                    <img src="${posterUrl}" alt="${this.movie.title}" style="width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-glass); margin-bottom: var(--spacing-lg);">
+                <div class="sidebar-column animate-slide-up" style="max-width: 100%; box-sizing: border-box;">
+                    <img src="${posterUrl}" alt="${this.movie.title}" style="width: 100%; max-width: 100%; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-glass); margin-bottom: var(--spacing-lg);">
                     
-                    <div class="glass-panel" style="padding: var(--spacing-lg); margin-bottom: var(--spacing-lg);">
+                    <div class="glass-panel" style="padding: var(--spacing-lg); margin-bottom: var(--spacing-lg); max-width: 100%; box-sizing: border-box;">
                         <h3 style="margin-bottom: var(--spacing-sm);">Watch Status</h3>
-                        <select id="status-select" class="input-field" style="margin-bottom: var(--spacing-md);">
+                        <select id="status-select" class="input-field" style="margin-bottom: var(--spacing-md); width: 100%; max-width: 100%; box-sizing: border-box;">
                             <option value="want" ${this.movie.status === 'want' ? 'selected' : ''}>Want to Watch</option>
                             <option value="watching" ${this.movie.status === 'watching' ? 'selected' : ''}>Watching</option>
                             <option value="watched" ${this.movie.status === 'watched' ? 'selected' : ''}>Watched</option>
@@ -75,46 +76,62 @@ export class MovieDetailController {
                         </select>
 
                         <h3 style="margin-bottom: var(--spacing-sm);">Personal Rating</h3>
-                        <div style="display: flex; gap: 0.25rem; align-items: center; margin-bottom: var(--spacing-md);" id="rating-stars">
+                        <div style="display: flex; gap: 0.25rem; align-items: center; margin-bottom: var(--spacing-md); flex-wrap: wrap; max-width: 100%;" id="rating-stars">
                             ${this.generateStars(this.movie.personalRating || 0)}
                         </div>
-                        <span id="rating-value" class="text-gold" style="font-weight: bold;">${this.movie.personalRating || 0} / 10</span>
+                        <span id="rating-value" class="text-gold" style="font-weight: bold; display: block; margin-bottom: var(--spacing-md);">${this.movie.personalRating || 0} / 10</span>
+
+                        <h3 style="margin-bottom: var(--spacing-sm); margin-top: var(--spacing-md); display: flex; align-items: center; gap: 0.5rem;"><i class="ph ph-folders text-gold"></i> Add to Collection</h3>
+                        <div class="collections-checklist" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 140px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-bottom: 0.5rem;">
+                            ${(storage.getCollections() || []).map(c => {
+                                const inCol = (this.movie.collections || []).includes(c.id);
+                                return `
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer; color: var(--text-secondary);">
+                                        <input type="checkbox" class="col-checkbox" data-col-id="${c.id}" ${inCol ? 'checked' : ''}>
+                                        <span>${c.name}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                        <button id="btn-open-col-modal" class="btn btn-secondary" style="width: 100%; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.35rem;">
+                            <i class="ph ph-sliders text-gold"></i> Select Collections
+                        </button>
                     </div>
 
-                    <button class="btn btn-secondary" style="width: 100%; color: #fa5252; border-color: rgba(250, 82, 82, 0.3);" id="btn-delete">
+                    <button class="btn btn-secondary" style="width: 100%; max-width: 100%; box-sizing: border-box; color: #fa5252; border-color: rgba(250, 82, 82, 0.3);" id="btn-delete">
                         <i class="ph ph-trash"></i> Remove from Vault
                     </button>
                 </div>
 
                 <!-- Right Column (Details & Notes) -->
-                <div class="main-column animate-slide-up delay-100">
-                    <h1 style="font-size: 3rem; margin-bottom: 0.5rem;">${this.movie.title} <span style="font-weight: 300; color: var(--text-secondary);">(${year})</span></h1>
+                <div class="main-column animate-slide-up delay-100" style="max-width: 100%; min-width: 0; word-break: break-word; overflow-wrap: break-word; box-sizing: border-box;">
+                    <h1 style="font-size: clamp(1.75rem, 5vw, 3rem); margin-bottom: 0.5rem; word-break: break-word; overflow-wrap: break-word; max-width: 100%; line-height: 1.2;">${this.movie.title} <span style="font-weight: 300; color: var(--text-secondary);">(${year})</span></h1>
                     
-                    <div style="display: flex; gap: 1rem; color: var(--text-secondary); margin-bottom: var(--spacing-lg); font-size: 0.9rem; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 1rem; color: var(--text-secondary); margin-bottom: var(--spacing-lg); font-size: 0.9rem; flex-wrap: wrap; max-width: 100%;">
                         <span><i class="ph ph-clock"></i> ${this.movie.runtime} min</span>
                         <span><i class="ph ph-film-strip"></i> ${genres}</span>
                         <span><i class="ph ph-star text-gold"></i> IMDb: ${this.movie.vote_average.toFixed(1)}</span>
                     </div>
 
-                    <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: var(--spacing-xl); color: var(--text-primary);">
+                    <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: var(--spacing-xl); color: var(--text-primary); word-break: break-word; overflow-wrap: break-word; max-width: 100%;">
                         ${this.movie.overview}
                     </p>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg); margin-bottom: var(--spacing-2xl);">
-                        <div class="glass-panel" style="padding: var(--spacing-lg);">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); margin-bottom: var(--spacing-2xl); max-width: 100%;" class="movie-stats-grid">
+                        <div class="glass-panel" style="padding: var(--spacing-lg); max-width: 100%; box-sizing: border-box;">
                             <h3 style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">Director</h3>
-                            <p style="font-weight: 500; font-size: 1.1rem;">${this.movie.director || 'Unknown'}</p>
+                            <p style="font-weight: 500; font-size: 1.1rem; word-break: break-word;">${this.movie.director || 'Unknown'}</p>
                         </div>
-                        <div class="glass-panel" style="padding: var(--spacing-lg);">
+                        <div class="glass-panel" style="padding: var(--spacing-lg); max-width: 100%; box-sizing: border-box;">
                             <h3 style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">Top Cast</h3>
-                            <p style="font-weight: 500;">${this.movie.cast ? this.movie.cast.join(', ') : 'Unknown'}</p>
+                            <p style="font-weight: 500; word-break: break-word;">${this.movie.cast ? this.movie.cast.join(', ') : 'Unknown'}</p>
                         </div>
                     </div>
 
                     <!-- Filmmaker Notes Section -->
-                    <h2 style="margin-bottom: var(--spacing-lg); padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">Filmmaker Notes</h2>
+                    <h2 style="margin-bottom: var(--spacing-lg); padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); max-width: 100%;">Filmmaker Notes</h2>
                     
-                    <div class="notes-container" style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+                    <div class="notes-container" style="display: flex; flex-direction: column; gap: var(--spacing-lg); max-width: 100%;">
                         ${this.generateNoteSection('review', 'General Review & Thoughts')}
                         ${this.generateNoteSection('storytelling', 'Storytelling & Screenplay')}
                         ${this.generateNoteSection('cinematography', 'Cinematography & Lighting')}
@@ -140,16 +157,16 @@ export class MovieDetailController {
     generateNoteSection(key, title) {
         const content = this.movie.notes && this.movie.notes[key] ? this.movie.notes[key] : '';
         return `
-            <div class="note-section glass-panel" style="padding: var(--spacing-lg);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+            <div class="note-section glass-panel" style="padding: var(--spacing-lg); max-width: 100%; box-sizing: border-box;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm); max-width: 100%;">
                     <h3 style="font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
                         <i class="ph ph-pencil-simple text-gold"></i> ${title}
                     </h3>
-                    <button class="btn-icon save-note-btn" data-key="${key}" style="width: 32px; height: 32px;" title="Save Note">
+                    <button class="btn-icon save-note-btn" data-key="${key}" style="width: 32px; height: 32px; min-width: 32px;" title="Save Note">
                         <i class="ph ph-floppy-disk"></i>
                     </button>
                 </div>
-                <textarea class="input-field note-textarea" data-key="${key}" rows="4" placeholder="Write your notes here...">${content}</textarea>
+                <textarea class="input-field note-textarea" data-key="${key}" rows="4" placeholder="Write your notes here..." style="width: 100%; max-width: 100%; box-sizing: border-box; resize: vertical;">${content}</textarea>
             </div>
         `;
     }
@@ -160,6 +177,35 @@ export class MovieDetailController {
         statusSelect.addEventListener('change', (e) => {
             storage.updateMovie(this.movie.id, { status: e.target.value });
         });
+
+        // Collection Checkboxes
+        const colCheckboxes = this.container.querySelectorAll('.col-checkbox');
+        colCheckboxes.forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const colId = e.target.dataset.colId;
+                storage.toggleMovieCollection(this.movie.id, colId);
+                if (!this.movie.collections) this.movie.collections = [];
+                const idx = this.movie.collections.indexOf(colId);
+                if (idx > -1) this.movie.collections.splice(idx, 1);
+                else this.movie.collections.push(colId);
+            });
+        });
+
+        // Collection Modal Button
+        const btnOpenColModal = this.container.querySelector('#btn-open-col-modal');
+        if (btnOpenColModal) {
+            btnOpenColModal.addEventListener('click', () => {
+                CollectionModal.open({
+                    title: `Select Collections`,
+                    initialSelectedIds: this.movie.collections || [],
+                    onSave: (selectedIds) => {
+                        storage.addMovie(this.movie, selectedIds);
+                        this.movie.collections = selectedIds;
+                        this.render();
+                    }
+                });
+            });
+        }
 
         // Rating Stars
         const stars = this.container.querySelectorAll('.star-rating');

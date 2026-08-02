@@ -1,5 +1,6 @@
 import { omdb } from '../services/OmdbService.js';
 import { storage } from '../services/StorageService.js';
+import { CollectionModal } from '../components/CollectionModal.js';
 
 export class SearchController {
     constructor(containerId) {
@@ -93,14 +94,14 @@ export class SearchController {
 
         // Get saved movies to check what's already in the vault
         const savedMovies = storage.getMovies();
-        const savedIds = new Set(savedMovies.map(m => m.id)); // id is now string (imdbID)
+        const savedIds = new Set(savedMovies.map(m => m.id));
 
         let html = '';
         data.results.forEach((movie, index) => {
             const inVault = savedIds.has(movie.imdbID);
             const posterUrl = omdb.getImageUrl(movie.Poster);
             const year = movie.Year || 'N/A';
-            const delay = (index % 10) * 100; // Staggered animation
+            const delay = (index % 10) * 100;
             
             html += `
                 <div class="movie-card animate-scale-up" style="animation-delay: ${delay}ms">
@@ -137,7 +138,7 @@ export class SearchController {
 
     async addToVault(id, btnElement) {
         // Show loading state on button
-        btnElement.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Adding...';
+        btnElement.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Loading...';
         btnElement.classList.add('disabled');
         btnElement.style.pointerEvents = 'none';
 
@@ -145,7 +146,6 @@ export class SearchController {
         const fullDetails = await omdb.getMovieDetails(id);
         
         if (fullDetails) {
-            // Transform OMDb data for local storage
             let runtimeInt = 0;
             if (fullDetails.Runtime && fullDetails.Runtime !== 'N/A') {
                 runtimeInt = parseInt(fullDetails.Runtime.split(' ')[0]) || 0;
@@ -165,7 +165,7 @@ export class SearchController {
                 original_title: fullDetails.Title,
                 overview: fullDetails.Plot !== 'N/A' ? fullDetails.Plot : 'No overview available.',
                 poster_path: fullDetails.Poster !== 'N/A' ? fullDetails.Poster : null,
-                backdrop_path: fullDetails.Poster !== 'N/A' ? fullDetails.Poster : null, // OMDb doesn't have backdrops, use poster
+                backdrop_path: fullDetails.Poster !== 'N/A' ? fullDetails.Poster : null,
                 release_date: fullDetails.Released !== 'N/A' ? fullDetails.Released : fullDetails.Year,
                 runtime: runtimeInt,
                 vote_average: fullDetails.imdbRating !== 'N/A' ? parseFloat(fullDetails.imdbRating) : 0,
@@ -174,18 +174,28 @@ export class SearchController {
                 cast: castArray,
             };
 
-            const success = storage.addMovie(movieData);
-            
-            if (success) {
-                // Update UI to show success
-                btnElement.className = 'btn btn-secondary';
-                btnElement.innerHTML = '<i class="ph ph-check text-gold"></i> In Vault';
-                btnElement.disabled = true;
-            } else {
-                btnElement.innerHTML = 'Error adding';
-            }
+            // Prompt user with Collection Selection Modal
+            CollectionModal.open({
+                title: `Select Collection`,
+                initialSelectedIds: [],
+                onSave: (selectedCollectionIds) => {
+                    const success = storage.addMovie(movieData, selectedCollectionIds);
+                    if (success) {
+                        btnElement.className = 'btn btn-secondary';
+                        btnElement.innerHTML = '<i class="ph ph-check text-gold"></i> In Vault';
+                        btnElement.disabled = true;
+                    }
+                },
+                onCancel: () => {
+                    btnElement.innerHTML = '<i class="ph ph-plus"></i> Add to Vault';
+                    btnElement.classList.remove('disabled');
+                    btnElement.style.pointerEvents = 'auto';
+                }
+            });
         } else {
             btnElement.innerHTML = 'Error fetching';
+            btnElement.classList.remove('disabled');
+            btnElement.style.pointerEvents = 'auto';
         }
     }
 }

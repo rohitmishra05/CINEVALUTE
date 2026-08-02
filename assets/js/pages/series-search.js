@@ -1,5 +1,6 @@
 import { omdb } from '../services/OmdbService.js';
 import { storage } from '../services/StorageService.js';
+import { CollectionModal } from '../components/CollectionModal.js';
 
 export class SeriesSearchController {
     constructor(containerId) {
@@ -12,29 +13,28 @@ export class SeriesSearchController {
     render() {
         this.container.innerHTML = `
             <div class="search-header" style="margin-bottom: var(--spacing-2xl);">
-                <h1 class="animate-slide-up">Discover Series</h1>
-                <p class="text-secondary animate-slide-up delay-100">Find and add new television shows to your vault.</p>
+                <h1 class="animate-slide-up">Discover Web Series</h1>
+                <p class="text-secondary animate-slide-up delay-100">Find and track television series in your vault.</p>
             </div>
             
             <div class="search-box animate-slide-up delay-200" style="max-width: 600px; margin: 0 auto var(--spacing-2xl) auto;">
                 <div class="input-group">
                     <i class="ph ph-magnifying-glass input-icon" style="font-size: 1.5rem;"></i>
-                    <input type="text" id="series-search-input" class="input-field glass-panel" placeholder="Search by series title..." style="font-size: 1.2rem; padding: 1rem 1rem 1rem 3.5rem;">
+                    <input type="text" id="discover-series-search-input" class="input-field glass-panel" placeholder="Search web series by title..." style="font-size: 1.2rem; padding: 1rem 1rem 1rem 3.5rem;">
                 </div>
             </div>
 
-            <div id="series-search-results" class="movie-grid">
-                <!-- Results go here -->
+            <div id="series-search-results" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--spacing-xl);">
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-secondary); padding: var(--spacing-2xl);">
                     <i class="ph ph-television" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem; display: block;"></i>
-                    Type a web series or TV show name to start searching.
+                    Type a web series title to start searching.
                 </div>
             </div>
         `;
     }
 
     attachEventListeners() {
-        const searchInput = this.container.querySelector('#series-search-input');
+        const searchInput = this.container.querySelector('#discover-series-search-input');
         
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.trim();
@@ -50,7 +50,6 @@ export class SeriesSearchController {
 
             this.showLoading();
             
-            // Debounce API calls
             this.searchTimeout = setTimeout(() => {
                 this.performSearch(query);
             }, 500);
@@ -62,7 +61,7 @@ export class SeriesSearchController {
         resultsContainer.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; color: var(--text-secondary); padding: var(--spacing-2xl);">
                 <i class="ph ph-television" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem; display: block;"></i>
-                Type a web series or TV show name to start searching.
+                Type a web series title to start searching.
             </div>
         `;
     }
@@ -91,7 +90,6 @@ export class SeriesSearchController {
             return;
         }
 
-        // Get saved series to check what's already in the vault
         const savedSeries = storage.getSeries();
         const savedIds = new Set(savedSeries.map(s => s.id));
 
@@ -100,7 +98,7 @@ export class SeriesSearchController {
             const inVault = savedIds.has(series.imdbID);
             const posterUrl = omdb.getImageUrl(series.Poster);
             const year = series.Year || 'N/A';
-            const delay = (index % 10) * 100; // Staggered animation
+            const delay = (index % 10) * 100;
             
             html += `
                 <div class="movie-card animate-scale-up" style="animation-delay: ${delay}ms">
@@ -125,7 +123,6 @@ export class SeriesSearchController {
 
         resultsContainer.innerHTML = html;
 
-        // Attach Add buttons events
         resultsContainer.querySelectorAll('.add-to-vault-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
@@ -136,19 +133,16 @@ export class SeriesSearchController {
     }
 
     async addToVault(id, btnElement) {
-        // Show loading state on button
-        btnElement.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Adding...';
+        btnElement.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Loading...';
         btnElement.classList.add('disabled');
         btnElement.style.pointerEvents = 'none';
 
-        // Fetch full details
         const fullDetails = await omdb.getMovieDetails(id);
         
         if (fullDetails) {
-            // Transform OMDb data for local storage
-            let totalSeasons = 0;
+            let totalSeasons = null;
             if (fullDetails.totalSeasons && fullDetails.totalSeasons !== 'N/A') {
-                totalSeasons = parseInt(fullDetails.totalSeasons) || 0;
+                totalSeasons = parseInt(fullDetails.totalSeasons) || null;
             }
 
             const genresArray = fullDetails.Genre !== 'N/A' 
@@ -174,18 +168,28 @@ export class SeriesSearchController {
                 cast: castArray,
             };
 
-            const success = storage.addSeries(seriesData);
-            
-            if (success) {
-                // Update UI to show success
-                btnElement.className = 'btn btn-secondary';
-                btnElement.innerHTML = '<i class="ph ph-check text-gold"></i> In Vault';
-                btnElement.disabled = true;
-            } else {
-                btnElement.innerHTML = 'Error adding';
-            }
+            // Prompt user with Collection Selection Modal
+            CollectionModal.open({
+                title: `Select Collection`,
+                initialSelectedIds: [],
+                onSave: (selectedCollectionIds) => {
+                    const success = storage.addSeries(seriesData, selectedCollectionIds);
+                    if (success) {
+                        btnElement.className = 'btn btn-secondary';
+                        btnElement.innerHTML = '<i class="ph ph-check text-gold"></i> In Vault';
+                        btnElement.disabled = true;
+                    }
+                },
+                onCancel: () => {
+                    btnElement.innerHTML = '<i class="ph ph-plus"></i> Add to Vault';
+                    btnElement.classList.remove('disabled');
+                    btnElement.style.pointerEvents = 'auto';
+                }
+            });
         } else {
             btnElement.innerHTML = 'Error fetching';
+            btnElement.classList.remove('disabled');
+            btnElement.style.pointerEvents = 'auto';
         }
     }
 }
